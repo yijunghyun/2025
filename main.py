@@ -33,7 +33,7 @@ foods = {
 
 # 🌈 앱 제목
 st.markdown("<h1 style='text-align: center; color: pink;'>🍽️ 랜덤 음식 추천기 🍽️</h1>", unsafe_allow_html=True)
-st.markdown("<p style='text-align: center;'>귀여운 음식 이모지로 오늘의 메뉴를 골라드려요!</p>", unsafe_allow_html=True)
+st.markdown("<p style='text-align: center;'>이모지로 오늘의 메뉴를 골라드려요!</p>", unsafe_allow_html=True)
 
 # 📅 오늘 날짜 기반 추천
 today = datetime.date.today()
@@ -67,4 +67,4 @@ if st.button("✨ 랜덤 추천 받기 ✨"):
 
 # 🌟 푸터
 st.markdown("<hr>", unsafe_allow_html=True)
-st.markdown("<p style='text-align: center; font-size: 12px; color: gray;'>© 2025 귀여운 음식 추천기 🍒</p>", unsafe_allow_html=True)
+st.markdown("<p style='text-align: center; font-size: 12px; color: gray;'>© 음식 추천기 🍒</p>", unsafe_allow_html=True)
