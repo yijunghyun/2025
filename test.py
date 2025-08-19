@@ -2,7 +2,20 @@ import streamlit as st
 import datetime
 import pandas as pd
 
+# 페이지 설정
 st.set_page_config(page_title="🌱 습관 화분", layout="centered")
+
+# 🌿 배경색 연녹색 CSS 적용
+st.markdown(
+    """
+    <style>
+    .stApp {
+        background-color: #d8f0d8;  /* 연녹색 */
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
 
 # 초기 상태 세팅
 if "habits" not in st.session_state:
@@ -45,7 +58,6 @@ else:
                     st.success(f"{habit} 화분이 자랐습니다! {plant_stages[st.session_state.growth[habit]]}")
                 else:
                     st.info(f"{habit} 화분은 이미 다 자랐습니다 🌴")
-                # 오늘 날짜 기록
                 today = datetime.date.today()
                 st.session_state.logs[habit].append(today)
         with col2:
