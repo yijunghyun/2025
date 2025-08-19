@@ -2,15 +2,23 @@ import streamlit as st
 import datetime
 import pandas as pd
 
-# 페이지 설정
 st.set_page_config(page_title="🌱 습관 화분", layout="centered")
 
-# 🌿 배경색 연녹색 CSS 적용
+# 버튼 CSS: 연녹색 배경
 st.markdown(
     """
     <style>
-    .stApp {
-        background-color: #d8f0d8;  /* 연녹색 */
+    div.stButton > button:first-child {
+        background-color: #a8e6a3;
+        color: black;
+        height: 3em;
+        width: 100%;
+        border-radius:10px;
+        font-size:18px;
+    }
+    div.stButton > button:hover {
+        background-color: #8ed68e;
+        color: black;
     }
     </style>
     """,
@@ -78,5 +86,4 @@ else:
             counts.append(st.session_state.logs[habit].count(day))
         chart_data[habit] = counts
 
-    df = pd.DataFrame(chart_data, index=[d.strftime("%m/%d") for d in last_week])
-    st.bar_chart(df)
+    df = pd.DataFrame(chart_data, index=[d.strft]()_
