@@ -8,7 +8,7 @@ st.set_page_config(page_title="🌱 습관 화분", layout="centered")
 st.markdown(
     """
     <style>
-    div.stButton > button:first-child {
+    div.stButton > button {
         background-color: #a8e6a3;
         color: black;
         height: 3em;
@@ -35,7 +35,7 @@ if "habits" not in st.session_state:
 plant_stages = ["🪴", "🪴🌱", "🪴🌿", "🪴🌳", "🪴🌴"]
 
 st.title("🌱 습관 화분 키우기")
-st.write("습관을 3개 정해서 꾸준히 키워보세요! (물주기 💧 하면 화분 속 식물이 자랍니다)")
+st.write("습관을 3개 정해서 꾸준히 키워보세요! (💧 버튼 누르면 화분 속 식물이 자랍니다)")
 
 # 습관 등록
 if not st.session_state.habits:
@@ -55,10 +55,10 @@ else:
     # 습관별 화분 표시
     for habit in st.session_state.habits:
         st.subheader(f"🌸 {habit}")
-        stage = st.session_state.growth[habit]
-        st.markdown(f"<h2 style='text-align:center;font-size:50px'>{plant_stages[stage]}</h2>", unsafe_allow_html=True)
 
         col1, col2 = st.columns(2)
+
+        # 💧 물주기 버튼 클릭 시 바로 growth 증가
         with col1:
             if st.button(f"💧 {habit} 물주기", key=f"water_{habit}"):
                 if st.session_state.growth[habit] < len(plant_stages) - 1:
@@ -68,10 +68,16 @@ else:
                     st.info(f"{habit} 화분은 이미 다 자랐습니다 🌴")
                 today = datetime.date.today()
                 st.session_state.logs[habit].append(today)
+
+        # 🔄 다시 시작 버튼 클릭 시 growth 초기화
         with col2:
             if st.button(f"🔄 {habit} 다시 시작", key=f"reset_{habit}"):
                 st.session_state.growth[habit] = 0
                 st.warning(f"{habit} 화분을 씨앗부터 다시 시작합니다 🌱")
+
+        # 버튼 아래에서 바로 화분 상태 표시
+        stage = st.session_state.growth[habit]
+        st.markdown(f"<h2 style='text-align:center;font-size:50px'>{plant_stages[stage]}</h2>", unsafe_allow_html=True)
 
     st.markdown("---")
     st.header("📊 주간 달성률 통계")
