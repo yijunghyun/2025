@@ -86,4 +86,5 @@ else:
             counts.append(st.session_state.logs[habit].count(day))
         chart_data[habit] = counts
 
-    df = pd.DataFrame(chart_data, index=[d.strft]()_
+    df = pd.DataFrame(chart_data, index=[d.strftime("%m/%d") for d in last_week])
+    st.bar_chart(df)
