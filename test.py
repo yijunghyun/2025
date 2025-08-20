@@ -37,6 +37,7 @@ plant_stages = ["🪴", "🌱", "🌿", "🌳", "🌴"]
 
 st.title("🌱 습관 화분 키우기")
 st.write("습관을 3개 정해서 꾸준히 키워보세요! (💧 버튼 누르면 화분 속 식물이 자랍니다)")
+st.write("습관을 한번 성공했을때 마다 한번씩 누르기 :3")
 
 # 습관 등록
 if not st.session_state.habits:
