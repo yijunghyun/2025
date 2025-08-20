@@ -44,7 +44,7 @@ if not st.session_state.habits:
         habit1 = st.text_input("습관 1", "운동하기")
         habit2 = st.text_input("습관 2", "책 읽기")
         habit3 = st.text_input("습관 3", "일찍 자기")
-        submitted = st.form_submit_button("등록하기🌱 (두번 누르기!)")
+        submitted = st.form_submit_button("등록하기 🌱")
 
         if submitted:
             st.session_state.habits = [habit1, habit2, habit3]
@@ -86,24 +86,30 @@ else:
     today = datetime.date.today()
     last_week = [today - datetime.timedelta(days=i) for i in range(6, -1, -1)]
 
-    # 습관별 차트 따로 그리기 (세로 그래프, y축 1단위 증가)
+    # 습관별 차트 따로 그리기 (세로 막대, y축 정수 1단위 & 중복 제거)
     for habit in st.session_state.habits:
-        counts = []
-        for day in last_week:
-            counts.append(st.session_state.logs[habit].count(day))
+        counts = [st.session_state.logs[habit].count(day) for day in last_week]
 
         df = pd.DataFrame({
             "날짜": [d.strftime("%m/%d") for d in last_week],
             "횟수": counts
         })
 
+        # y축 최대값 계산 (최소 1로 설정해 축이 보이도록)
+        y_max = max(1, max(counts) if counts else 0)
+        tick_vals = list(range(0, y_max + 1))
+
         st.subheader(f"📈 {habit} 주간 통계")
         chart = (
             alt.Chart(df)
             .mark_bar()
             .encode(
-                x="날짜:N",  # x축: 날짜
-                y=alt.Y("횟수:Q", axis=alt.Axis(format="d", tickMinStep=1))  # y축: 정수 단위, 1씩 증가
+                x="날짜:N",
+                y=alt.Y(
+                    "횟수:Q",
+                    scale=alt.Scale(domain=(0, y_max), nice=False),
+                    axis=alt.Axis(values=tick_vals, format="d")  # 정수 눈금만, 중복 없이
+                )
             )
             .properties(width=500, height=300)
         )
