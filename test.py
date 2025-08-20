@@ -1,7 +1,7 @@
 import streamlit as st
 import datetime
 import pandas as pd
-import plotly.express as px
+import matplotlib.pyplot as plt
 
 st.set_page_config(page_title="🌱 습관 화분", layout="centered")
 
@@ -105,15 +105,15 @@ else:
             "횟수": counts
         })
 
-        fig = px.bar(
-            df,
-            x="날짜",
-            y="횟수",
-            text="횟수",
-            labels={"횟수": "횟수", "날짜": "날짜"},
-        )
-
-        fig.update_traces(textposition='outside')
-        fig.update_yaxes(dtick=1)  # y축 1씩 증가
-        fig.update_xaxes(tickangle=0)  # x축 글자 수평
-        st.plotly_chart(fig, use_container_width=True)
+        # Matplotlib으로 그리기
+        fig, ax = plt.subplots(figsize=(7,4))
+        ax.bar(df["날짜"], df["횟수"], color="#a8e6a3")
+        ax.set_ylim(0, max(counts)+1)
+        ax.set_ylabel("횟수")
+        ax.set_xlabel("날짜")
+        ax.set_xticks(df["날짜"])
+        ax.set_yticks(range(0, max(counts)+2))  # y축 1씩 증가
+        ax.set_xticklabels(df["날짜"], rotation=0)  # 수평
+        for i, v in enumerate(df["횟수"]):
+            ax.text(i, v + 0.05, str(v), ha='center', va='bottom')  # 값 표시
+        st.pyplot(fig)
