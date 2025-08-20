@@ -44,7 +44,7 @@ if not st.session_state.habits:
         habit1 = st.text_input("습관 1", "운동하기")
         habit2 = st.text_input("습관 2", "책 읽기")
         habit3 = st.text_input("습관 3", "일찍 자기")
-        submitted = st.form_submit_button("등록하기 🌱")
+        submitted = st.form_submit_button("등록하기🌱 (두번 누르기!)")
 
         if submitted:
             st.session_state.habits = [habit1, habit2, habit3]
@@ -59,7 +59,7 @@ else:
 
         col1, col2 = st.columns(2)
 
-        # 💧 물주기 버튼 클릭 시 바로 growth 증가
+        # 💧 물주기 버튼 클릭 시 growth 증가
         with col1:
             if st.button(f"💧 {habit} 물주기", key=f"water_{habit}"):
                 if st.session_state.growth[habit] < len(plant_stages) - 1:
@@ -86,31 +86,30 @@ else:
     today = datetime.date.today()
     last_week = [today - datetime.timedelta(days=i) for i in range(6, -1, -1)]
 
-    # 습관별 차트 따로 그리기 (세로 막대, y축 정수 1단위 & 중복 제거)
+    # 습관별 차트
     for habit in st.session_state.habits:
-        counts = [st.session_state.logs[habit].count(day) for day in last_week]
+        counts = []
+        for day in last_week:
+            counts.append(st.session_state.logs[habit].count(day))
 
-        df = pd.DataFrame({
-            "날짜": [d.strftime("%m/%d") for d in last_week],
-            "횟수": counts
-        })
+        df = pd.DataFrame({"날짜": [d.strftime("%m/%d") for d in last_week], "횟수": counts})
 
-        # y축 최대값 계산 (최소 1로 설정해 축이 보이도록)
-        y_max = max(1, max(counts) if counts else 0)
+        y_max = max(counts) + 1
         tick_vals = list(range(0, y_max + 1))
 
-        st.subheader(f"📈 {habit} 주간 통계")
         chart = (
             alt.Chart(df)
             .mark_bar()
             .encode(
-                x="날짜:N",
+                x=alt.X("날짜:N", axis=alt.Axis(labelAngle=0)),  # 날짜를 수평으로 표시
                 y=alt.Y(
                     "횟수:Q",
                     scale=alt.Scale(domain=(0, y_max), nice=False),
-                    axis=alt.Axis(values=tick_vals, format="d")  # 정수 눈금만, 중복 없이
+                    axis=alt.Axis(values=tick_vals, format="d")  # 자연수만 표시
                 )
             )
             .properties(width=500, height=300)
         )
+
+        st.subheader(f"📈 {habit} 그래프")
         st.altair_chart(chart, use_container_width=True)
