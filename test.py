@@ -100,9 +100,28 @@ else:
 
     # 습관별 차트
     for habit in st.session_state.habits:
-        st.subheader(f"{habit} 주간 달성률")
         counts = []
         for day in last_week:
             counts.append(st.session_state.logs[habit].count(day))
-        df = pd.DataFrame({habit: counts}, index=[d.strftime("%m/%d") for d in last_week])
-        st.bar_chart(df, use_container_width=True)
+
+        df = pd.DataFrame({"날짜": [d.strftime("%m/%d") for d in last_week], "횟수": counts})
+
+        y_max = max(counts) + 1
+        tick_vals = list(range(0, y_max + 1))
+
+        chart = (
+            alt.Chart(df)
+            .mark_bar()
+            .encode(
+                x=alt.X("날짜:N", axis=alt.Axis(labelAngle=0)),  # 날짜를 수평으로 표시
+                y=alt.Y(
+                    "횟수:Q",
+                    scale=alt.Scale(domain=(0, y_max), nice=False),
+                    axis=alt.Axis(values=tick_vals, format="d")  # 자연수만 표시
+                )
+            )
+            .properties(width=500, height=300)
+        )
+
+        st.subheader(f"📈 {habit} 그래프")
+        st.altair_chart(chart, use_container_width=True)
