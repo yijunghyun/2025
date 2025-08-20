@@ -1,7 +1,7 @@
 import streamlit as st
 import datetime
 import pandas as pd
-import random
+import altair as alt
 
 st.set_page_config(page_title="🌱 습관 화분", layout="centered")
 
@@ -44,7 +44,7 @@ if not st.session_state.habits:
         habit1 = st.text_input("습관 1", "운동하기")
         habit2 = st.text_input("습관 2", "책 읽기")
         habit3 = st.text_input("습관 3", "일찍 자기")
-        submitted = st.form_submit_button("등록하기🌱")
+        submitted = st.form_submit_button("등록하기🌱 (두번 누르기!)")
 
         if submitted:
             st.session_state.habits = [habit1, habit2, habit3]
@@ -59,26 +59,14 @@ else:
 
         col1, col2 = st.columns(2)
 
-        # 💧 물주기 버튼 클릭 시 바로 growth 증가 + 레벨업 체크
+        # 💧 물주기 버튼 클릭 시 growth 증가
         with col1:
             if st.button(f"💧 {habit} 물주기", key=f"water_{habit}"):
                 if st.session_state.growth[habit] < len(plant_stages) - 1:
                     st.session_state.growth[habit] += 1
-                    stage = st.session_state.growth[habit]
-                    st.success(f"{habit} 화분이 자랐습니다! {plant_stages[stage]}")
-                    
-                    # 랜덤 응원 메시지
-                    messages = ["잘했어요! 👍", "오늘도 성장 중 🌱", "당신 최고! 🌸"]
-                    st.info(random.choice(messages))
-                    
-                    # 레벨업 효과
-                    if stage == len(plant_stages) - 1:
-                        st.balloons()
-                        st.success(f"🎉 {habit} 화분이 최대 단계에 도달했습니다! 🌴 레벨업 완료!")
+                    st.success(f"{habit} 화분이 자랐습니다! {plant_stages[st.session_state.growth[habit]]}")
                 else:
                     st.info(f"{habit} 화분은 이미 다 자랐습니다 🌴")
-                
-                # 오늘 날짜 로그 기록
                 today = datetime.date.today()
                 st.session_state.logs[habit].append(today)
 
