@@ -43,7 +43,7 @@ if not st.session_state.habits:
         habit1 = st.text_input("습관 1", "운동하기")
         habit2 = st.text_input("습관 2", "책 읽기")
         habit3 = st.text_input("습관 3", "일찍 자기")
-        submitted = st.form_submit_button("등록하기 🌱")
+        submitted = st.form_submit_button("등록하기🌱 (두번 누르기!)")
 
         if submitted:
             st.session_state.habits = [habit1, habit2, habit3]
