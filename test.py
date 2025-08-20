@@ -1,6 +1,7 @@
 import streamlit as st
 import datetime
 import pandas as pd
+import altair as alt
 
 st.set_page_config(page_title="🌱 습관 화분", layout="centered")
 
@@ -85,12 +86,25 @@ else:
     today = datetime.date.today()
     last_week = [today - datetime.timedelta(days=i) for i in range(6, -1, -1)]
 
-    chart_data = {}
+    # 습관별 차트 따로 그리기
     for habit in st.session_state.habits:
         counts = []
         for day in last_week:
             counts.append(st.session_state.logs[habit].count(day))
-        chart_data[habit] = counts
 
-    df = pd.DataFrame(chart_data, index=[d.strftime("%m/%d") for d in last_week])
-    st.bar_chart(df)
+        df = pd.DataFrame({
+            "날짜": [d.strftime("%m/%d") for d in last_week],
+            "횟수": counts
+        })
+
+        st.subheader(f"📈 {habit} 주간 통계")
+        chart = (
+            alt.Chart(df)
+            .mark_bar()
+            .encode(
+                x="날짜:N",
+                y=alt.Y("횟수:Q", axis=alt.Axis(tickMinStep=1))  # y축을 정수 단위로 강제
+            )
+            .properties(width=500, height=300)
+        )
+        st.altair_chart(chart, use_container_width=True)
