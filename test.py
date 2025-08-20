@@ -1,7 +1,7 @@
 import streamlit as st
 import datetime
 import pandas as pd
-import altair as alt
+import plotly.express as px
 
 st.set_page_config(page_title="🌱 습관 화분", layout="centered")
 
@@ -44,7 +44,7 @@ if not st.session_state.habits:
         habit1 = st.text_input("습관 1", "운동하기")
         habit2 = st.text_input("습관 2", "책 읽기")
         habit3 = st.text_input("습관 3", "일찍 자기")
-        submitted = st.form_submit_button("등록하기🌱 (두번 누르기!)")
+        submitted = st.form_submit_button("등록하기🌱")
 
         if submitted:
             st.session_state.habits = [habit1, habit2, habit3]
@@ -59,14 +59,22 @@ else:
 
         col1, col2 = st.columns(2)
 
-        # 💧 물주기 버튼 클릭 시 growth 증가
+        # 💧 물주기 버튼 클릭 시 바로 growth 증가 + 레벨업 체크
         with col1:
             if st.button(f"💧 {habit} 물주기", key=f"water_{habit}"):
                 if st.session_state.growth[habit] < len(plant_stages) - 1:
                     st.session_state.growth[habit] += 1
-                    st.success(f"{habit} 화분이 자랐습니다! {plant_stages[st.session_state.growth[habit]]}")
+                    stage = st.session_state.growth[habit]
+                    st.success(f"{habit} 화분이 자랐습니다! {plant_stages[stage]}")
+                    
+                    # 레벨업 효과
+                    if stage == len(plant_stages) - 1:
+                        st.balloons()
+                        st.success(f"🎉 {habit} 화분이 최대 단계에 도달했습니다! 🌴 레벨업 완료!")
                 else:
                     st.info(f"{habit} 화분은 이미 다 자랐습니다 🌴")
+                
+                # 오늘 날짜 로그 기록
                 today = datetime.date.today()
                 st.session_state.logs[habit].append(today)
 
@@ -85,31 +93,27 @@ else:
 
     today = datetime.date.today()
     last_week = [today - datetime.timedelta(days=i) for i in range(6, -1, -1)]
+    last_week_str = [d.strftime("%m/%d") for d in last_week]
 
     # 습관별 차트
     for habit in st.session_state.habits:
-        counts = []
-        for day in last_week:
-            counts.append(st.session_state.logs[habit].count(day))
+        st.subheader(f"{habit} 주간 달성률")
+        counts = [st.session_state.logs[habit].count(day) for day in last_week]
 
-        df = pd.DataFrame({"날짜": [d.strftime("%m/%d") for d in last_week], "횟수": counts})
+        df = pd.DataFrame({
+            "날짜": last_week_str,
+            "횟수": counts
+        })
 
-        y_max = max(counts) + 1
-        tick_vals = list(range(0, y_max + 1))
-
-        chart = (
-            alt.Chart(df)
-            .mark_bar()
-            .encode(
-                x=alt.X("날짜:N", axis=alt.Axis(labelAngle=0)),  # 날짜를 수평으로 표시
-                y=alt.Y(
-                    "횟수:Q",
-                    scale=alt.Scale(domain=(0, y_max), nice=False),
-                    axis=alt.Axis(values=tick_vals, format="d")  # 자연수만 표시
-                )
-            )
-            .properties(width=500, height=300)
+        fig = px.bar(
+            df,
+            x="날짜",
+            y="횟수",
+            text="횟수",
+            labels={"횟수": "횟수", "날짜": "날짜"},
         )
 
-        st.subheader(f"📈 {habit} 그래프")
-        st.altair_chart(chart, use_container_width=True)
+        fig.update_traces(textposition='outside')
+        fig.update_yaxes(dtick=1)  # y축 1씩 증가
+        fig.update_xaxes(tickangle=0)  # x축 글자 수평
+        st.plotly_chart(fig, use_container_width=True)
