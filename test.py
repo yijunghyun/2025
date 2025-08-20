@@ -102,8 +102,8 @@ else:
             alt.Chart(df)
             .mark_bar()
             .encode(
-                y="날짜:N",  # y축을 날짜로
-                x=alt.X("횟수:Q", axis=alt.Axis(tickMinStep=1))  # x축을 정수 단위
+                x="날짜:N",  # x축: 날짜
+                y=alt.Y("횟수:Q", axis=alt.Axis(format="d"))  # y축: 정수 단위
             )
             .properties(width=500, height=300)
         )
