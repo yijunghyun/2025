@@ -86,7 +86,7 @@ else:
     today = datetime.date.today()
     last_week = [today - datetime.timedelta(days=i) for i in range(6, -1, -1)]
 
-    # 습관별 차트 따로 그리기
+    # 습관별 차트 따로 그리기 (세로 그래프)
     for habit in st.session_state.habits:
         counts = []
         for day in last_week:
@@ -102,8 +102,8 @@ else:
             alt.Chart(df)
             .mark_bar()
             .encode(
-                x="날짜:N",
-                y=alt.Y("횟수:Q", axis=alt.Axis(tickMinStep=1))  # y축을 정수 단위로 강제
+                y="날짜:N",  # y축을 날짜로
+                x=alt.X("횟수:Q", axis=alt.Axis(tickMinStep=1))  # x축을 정수 단위
             )
             .properties(width=500, height=300)
         )
