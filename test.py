@@ -44,7 +44,7 @@ if not st.session_state.habits:
         habit1 = st.text_input("습관 1", "운동하기")
         habit2 = st.text_input("습관 2", "책 읽기")
         habit3 = st.text_input("습관 3", "일찍 자기")
-        submitted = st.form_submit_button("등록하기🌱 (두번 누르기!)")
+        submitted = st.form_submit_button("등록하기🌱")
 
         if submitted:
             st.session_state.habits = [habit1, habit2, habit3]
@@ -52,6 +52,7 @@ if not st.session_state.habits:
                 st.session_state.growth[h] = 0
                 st.session_state.logs[h] = []
             st.success("습관이 등록되었습니다!")
+
 else:
     # 습관별 화분 표시
     for habit in st.session_state.habits:
@@ -59,16 +60,23 @@ else:
 
         col1, col2 = st.columns(2)
 
-        # 💧 물주기 버튼 클릭 시 growth 증가
+        # 💧 물주기 버튼 클릭 시 growth 증가 + 레벨업 체크
         with col1:
             if st.button(f"💧 {habit} 물주기", key=f"water_{habit}"):
-                if st.session_state.growth[habit] < len(plant_stages) - 1:
-                    st.session_state.growth[habit] += 1
-                    st.success(f"{habit} 화분이 자랐습니다! {plant_stages[st.session_state.growth[habit]]}")
-                else:
-                    st.info(f"{habit} 화분은 이미 다 자랐습니다 🌴")
                 today = datetime.date.today()
                 st.session_state.logs[habit].append(today)
+
+                if st.session_state.growth[habit] < len(plant_stages) - 1:
+                    st.session_state.growth[habit] += 1
+                    stage = st.session_state.growth[habit]
+                    st.success(f"{habit} 화분이 자랐습니다! {plant_stages[stage]}")
+                    
+                    # 레벨업 체크
+                    if stage == len(plant_stages) - 1:
+                        st.balloons()
+                        st.success(f"🎉 {habit} 화분이 최대 단계에 도달했습니다! 🌴 레벨업 완료!")
+                else:
+                    st.info(f"{habit} 화분은 이미 다 자랐습니다 🌴")
 
         # 🔄 다시 시작 버튼 클릭 시 growth 초기화
         with col2:
@@ -101,11 +109,11 @@ else:
             alt.Chart(df)
             .mark_bar()
             .encode(
-                x=alt.X("날짜:N", axis=alt.Axis(labelAngle=0)),  # 날짜를 수평으로 표시
+                x=alt.X("날짜:N", axis=alt.Axis(labelAngle=0)),  # 날짜 수평
                 y=alt.Y(
                     "횟수:Q",
                     scale=alt.Scale(domain=(0, y_max), nice=False),
-                    axis=alt.Axis(values=tick_vals, format="d")  # 자연수만 표시
+                    axis=alt.Axis(values=tick_vals, format="d")  # 자연수 단위
                 )
             )
             .properties(width=500, height=300)
